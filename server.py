@@ -29,7 +29,7 @@ def handle_client(client: socket.socket, addr: str):
             if data.startswith('create'.encode('utf-8')):
                 msg_str = data.decode('utf-8')
                 try:
-                    _, room_name = msg_str.split()
+                    _, room_name = msg_str.split(' ', 1)
                     if room_name in ROOMS.keys():
                         client.send(
                             "This room name is already in use!".encode('utf-8'))
@@ -37,18 +37,23 @@ def handle_client(client: socket.socket, addr: str):
                         current_room = room_name
                         ROOMS[current_room] = [client]
                         client.send("success".encode('utf-8'))
+                        print(addr + " created " + current_room)
                 except Exception:
                     client.send("error".encode('utf-8'))
 
             elif data.startswith('join'.encode('utf-8')):
                 msg_str = data.decode('utf-8')
-                _, room_name = msg_str.split()
-                if not room_name in ROOMS.keys():
+                try:
+                    _, room_name = msg_str.split(' ', 1)
+                    if not room_name in ROOMS.keys():
+                        client.send("error".encode('utf-8'))
+                    else:
+                        current_room = room_name
+                        ROOMS[current_room].append(client)
+                        client.send("success".encode('utf-8'))
+                        print(addr + " join " + current_room)
+                except:
                     client.send("error".encode('utf-8'))
-                else:
-                    current_room = room_name
-                    ROOMS[current_room].append(client)
-                    client.send("success".encode('utf-8'))
 
             elif current_room != "":
                 for each in ROOMS[current_room]:

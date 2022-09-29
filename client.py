@@ -6,6 +6,7 @@ import threading
 import pyaudio
 
 
+# ADDRESS = "120.48.48.225"
 ADDRESS = "127.0.0.1"
 PORT = 9808
 
@@ -17,6 +18,7 @@ def tryConnect() -> socket.socket:
         client.connect((ADDRESS, PORT))
     except Exception as e:
         print("Connect Failed!")
+        input()
         sys.exit()
     else:
         return client
@@ -78,6 +80,7 @@ def main():
         data = client.recv(1024).decode('utf-8')
         if data == "error":
             print("\n\033[1;31mCreate Failed!\033[0;m\n")
+            input()
             sys.exit()
         elif data == "success":
             print(
@@ -92,6 +95,7 @@ def main():
             send_data_to_server(client, recording_stream)
         else:
             print(f"\n\033[1;31m{data}\033[0;m\n")
+            input()
             sys.exit()
     if selection == 2:
         room_name = input("Please give the room's name: ")
@@ -99,6 +103,7 @@ def main():
         data = client.recv(1024).decode('utf-8')
         if data == "error":
             print(f"\n\033[1;31mRoom [{room_name}] is not exist!\033[0;m\n")
+            input()
             sys.exit()
         elif data == "success":
             print(
